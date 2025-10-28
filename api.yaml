@@ -1,0 +1,574 @@
+openapi: 3.0.0
+info:
+  title: API de Sistema de Música en Streaming - Contenido
+  description: API para gestionar álbumes, canciones, ficheros, merchandising de un sistema de música en streaming.
+  version: 1.0.0
+tags:
+  - name: Álbum
+    description: Todas las operaciones relacionadas con los álbum
+  - name: Canción
+    description: Todas las operaciones relacionadas con los canción
+  - name: Ficheros
+    description: Todas las operaciones relacionadas con los ficheros
+  - name: Merchandising
+    description: Todas las operaciones relacionadas con los merchandising
+
+
+paths:
+
+  /album:
+    get:
+      tags:
+      - Álbum
+      summary: Obtener todos los albumes
+      responses:
+        '200':
+          description: Lista de contenidos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Album'
+    post:
+      tags:
+      - Álbum
+      summary: Crear nuevo album
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Album'
+      responses:
+        '201':
+          description: Album creado
+
+  /album/{id}:
+    get:
+      tags:
+      - Álbum
+      summary: Obtener un album por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del album que se desea obtener
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Album encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+        '404':
+          description: Album no encontrado
+  
+    put:
+      tags:
+      - Álbum
+      summary: Actualizar un Album por ID 
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID del album que se desea obtener
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Album'
+      responses:
+        '204':
+          description: 'Album actualizado'
+        '404':
+          description: 'Album no encontrado'
+    
+    delete:
+      tags:
+      - Álbum
+      summary: Borrar un Album por ID 
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID del album que se desea obtener
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: 'Album borrado'
+        '404':
+          description: 'Album no encontrado'
+          
+  /album/artista/{id}:
+    get:
+      tags:
+      - Álbum
+      summary: Obtener un album por ID de artista
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del artista del album que se desea obtener
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Album encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+        '404':
+          description: Album no encontrado
+          
+          
+          
+  /canciones:
+    get:
+      tags:
+      - Canción
+      summary: Obtener todas las canciones
+      responses:
+        '200':
+          description: Lista de canciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cancion'
+    post:
+      tags:
+      - Canción
+      summary: Subir una cancion.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cancion'
+      responses:
+        '201':
+          description: La cancion se ha subido correctamente
+          links:
+            userDetail:
+              operationId: getCancionID
+              parameters:
+                id: '$response.body#/0/id'
+              description: Ir al detalle del primer usuario
+        '400':
+          description: Error al subir la cancion.
+  
+  /canciones/{id}:
+    get:
+      tags:
+      - Canción
+      operationId: getCancionID
+      summary: Obtener cancion por ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la cancion
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cancion encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cancion'
+        '404':
+          description: Cancion no encontrada.
+          
+    put:
+      tags:
+      - Canción
+      summary: Actualizar una cancion por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la cancion que se desea actualizar
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cancion'
+      responses:
+        '204':
+          description: Cancion actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cancion'
+        '404':
+          description: Cancion no encontrada
+        '400':
+          description: La informacion para actualizar la cancion es erronea
+    
+    delete:
+      tags:
+      - Canción
+      summary: Borrar una cancion por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del cancion que se desea borrar
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Cancion borrada correctamente
+        '404':
+          description: Cancion no encontrada
+          
+  /canciones/artista/{id}:
+    get:
+      tags:
+      - Canción
+      operationId: getCancionPorArtistaID
+      summary: Obtener cancion por el ID de un artista.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la cancion
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cancion encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cancion'
+        '404':
+          description: Cancion no encontrada.
+
+          
+  /ficheros:
+    get:
+      tags:
+      - Ficheros
+      summary: Obtener todos los ficheros
+      responses:
+        '200':
+          description: Lista de ficheros
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Fichero'
+    post:
+      tags:
+      - Ficheros
+      summary: Subir un fichero.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Fichero'
+      responses:
+        '201':
+          description: El fichero se ha subido correctamente
+          links:
+            userDetail:
+              operationId: getFicheroID
+              parameters:
+                id: '$response.body#/0/id'
+              description: Ir al detalle del primer fichero
+        '400':
+          description: Error al subir el fichero.
+  
+  /ficheros/{id}:
+    get:
+      tags:
+      - Ficheros
+      operationId: getFicheroID
+      summary: Obtener fichero por ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del fichero
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Fichero encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fichero'
+        '404':
+          description: Fichero no encontrado.
+    
+    put:
+      tags:
+      - Ficheros
+      summary: Actualizar fichero por ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del fichero a actualizar
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Fichero'
+      responses:
+        '204':
+          description: Fichero actualizado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fichero'
+        '400':
+          description: Error al actualizar el fichero.
+        '404':
+          description: Fichero no encontrado.
+
+    delete:
+      tags:
+      - Ficheros
+      summary: Eliminar fichero por ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del fichero a eliminar
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Fichero eliminado correctamente.
+        '404':
+          description: Fichero no encontrado.
+          
+
+  /merchandising:
+    get:
+      tags:
+      - Merchandising
+      summary: Obtener todos los productos de merchandising
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Merchandising'
+    post:
+      tags:
+      - Merchandising
+      summary: Crear producto de merchandising.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cancion'
+      responses:
+        '201':
+          description: El producto se ha subido correctamente
+          links:
+            userDetail:
+              operationId: getProductoID
+              parameters:
+                id: '$response.body#/0/id'
+              description: Ir al detalle del producto creado
+        '400':
+          description: Error al subir el producto.
+
+  /merchandising/{id}:
+    get:
+      tags:
+      - Merchandising
+      operationId: getProdcutoID
+      summary: Obtener un producto de merchandising por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del producto
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Merchandising'
+        '404':
+          description: Producto no encontrado
+    put:
+      tags:
+      - Merchandising
+      summary: Actualizar un producto por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Merchandising'
+      responses:
+        '204':
+          description: Producto actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cancion'
+        '404':
+          description: Producto no encontrado
+        '400':
+          description: Informacion erronea para actualizar
+
+    delete:
+      tags:
+      - Merchandising
+      summary: Borrar un producto por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Producto borrado correctamente
+        '404':
+          description: Producto no encontrado
+  /merchandising/artista/{id}:
+    get:
+      tags:
+      - Merchandising
+      operationId: getMerchandisingIDArtista
+      summary: Obtener productos por el ID de un artista.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la cancion
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cancion encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Merchandising'
+        '404':
+          description: Cancion no encontrada.
+
+
+
+components:
+  schemas:
+  
+    Album:
+      type: object
+      properties:
+        nombre:
+          type: string
+        artistaAutor:
+          type: string
+        artistasParticipantes:
+          type: array
+          items:
+            type: string
+        canciones:
+          type: array
+          items:
+            type: string
+        fechaLanzamiento:
+          type: string
+          format: date
+        genero:
+          type: string
+            
+    Cancion:
+      type: object
+      properties:
+        nombre:
+          type: string
+        duracion:
+          type: string
+        genero:
+          type: string
+        artista:
+          type: string
+        album:
+          type: string
+        fichero:
+          $ref: './ficheros.yaml#/components/schemas/Fichero'
+        portada:
+          $ref: './portada.yaml#/components/schemas/Portada'
+  
+    Fichero:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID único del fichero
+        nombre:
+          type: string
+          description: Nombre del fichero
+        tipo:
+          type: string
+          description: Tipo de fichero (e.g., audio, imagen)
+        tamaño:
+          type: integer
+          description: Tamaño del fichero en bytes
+        url:
+          type: string
+          description: URL para acceder al Fichero
+          
+    Merchandising:
+      type: object
+      properties:
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        artista:
+          type: string
+        precio:
+          type: number
+          format: float
+        disponibilidad:
+          type: boolean
+        cantidad_stock:
+          type: integer
+        empresa_envio:
+          type: string
+        imagen:
+          $ref: '#/components/schemas/Imagen'
