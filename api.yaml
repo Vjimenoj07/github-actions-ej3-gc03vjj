@@ -1,574 +1,409 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  title: API de Sistema de Música en Streaming - Contenido
-  description: API para gestionar álbumes, canciones, ficheros, merchandising de un sistema de música en streaming.
+  title: API de Interacción y Personalización
+  description: API para gestionar la interacción y personalización de usuarios en la arquitectura de microservicios.
   version: 1.0.0
-tags:
-  - name: Álbum
-    description: Todas las operaciones relacionadas con los álbum
-  - name: Canción
-    description: Todas las operaciones relacionadas con los canción
-  - name: Ficheros
-    description: Todas las operaciones relacionadas con los ficheros
-  - name: Merchandising
-    description: Todas las operaciones relacionadas con los merchandising
+servers:
+  - url: https://api.tu-dominio.com/v1
+    description: Servidor principal
 
+tags:
+  - name: Historial
+    description: Operaciones relacionadas con el historial de visualizaciones
+  - name: Ratings
+    description: Operaciones relacionadas con los ratings de contenidos
+  - name: Favoritos
+    description: Operaciones relacionadas con los favoritos de los usuarios
+  - name: Recomendaciones
+    description: Operaciones para generar recomendaciones de contenido
 
 paths:
-
-  /album:
+  /historial:
     get:
       tags:
-      - Álbum
-      summary: Obtener todos los albumes
+        - Historial
+      summary: Obtener todas las visualizaciones
       responses:
         '200':
-          description: Lista de contenidos
+          description: Lista de visualizaciones
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Album'
+                  $ref: '#/components/schemas/Visualizacion'
     post:
       tags:
-      - Álbum
-      summary: Crear nuevo album
+        - Historial
+      summary: Agregar una visualización
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Album'
+              $ref: '#/components/schemas/Visualizacion'
       responses:
         '201':
-          description: Album creado
+          description: Visualización creada
+        '400':
+          description: Datos inválidos
 
-  /album/{id}:
+  /historial/{id_visualizacion}:
     get:
       tags:
-      - Álbum
-      summary: Obtener un album por ID
+        - Historial
+      summary: Obtener visualización por ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID del album que se desea obtener
+        - in: path
+          name: id_visualizacion
           schema:
             type: integer
+          required: true
+          description: ID de la visualización
       responses:
         '200':
-          description: Album encontrado
+          description: Visualización encontrada
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Album'
+                $ref: '#/components/schemas/Visualizacion'
         '404':
-          description: Album no encontrado
-  
+          description: Visualización no encontrada
     put:
       tags:
-      - Álbum
-      summary: Actualizar un Album por ID 
+        - Historial
+      summary: Actualizar visualización
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: ID del album que se desea obtener
-        schema:
-          type: integer
+        - in: path
+          name: id_visualizacion
+          schema:
+            type: integer
+          required: true
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Album'
+              $ref: '#/components/schemas/Visualizacion'
       responses:
-        '204':
-          description: 'Album actualizado'
+        '200':
+          description: Visualización actualizada
+        '400':
+          description: Datos inválidos
         '404':
-          description: 'Album no encontrado'
-    
+          description: Visualización no encontrada
     delete:
       tags:
-      - Álbum
-      summary: Borrar un Album por ID 
+        - Historial
+      summary: Eliminar visualización
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: ID del album que se desea obtener
-        schema:
-          type: integer
-      responses:
-        '204':
-          description: 'Album borrado'
-        '404':
-          description: 'Album no encontrado'
-          
-  /album/artista/{id}:
-    get:
-      tags:
-      - Álbum
-      summary: Obtener un album por ID de artista
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID del artista del album que se desea obtener
+        - in: path
+          name: id_visualizacion
           schema:
             type: integer
+          required: true
       responses:
-        '200':
-          description: Album encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Album'
+        '204':
+          description: Visualización eliminada
         '404':
-          description: Album no encontrado
-          
-          
-          
-  /canciones:
+          description: Visualización no encontrada
+
+  /historial/perfil/{id_perfil}:
     get:
       tags:
-      - Canción
-      summary: Obtener todas las canciones
+        - Historial
+      summary: Obtener historial por perfil
+      parameters:
+        - in: path
+          name: id_perfil
+          schema:
+            type: integer
+          required: true
       responses:
         '200':
-          description: Lista de canciones
+          description: Lista de visualizaciones del perfil
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Cancion'
-    post:
-      tags:
-      - Canción
-      summary: Subir una cancion.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Cancion'
-      responses:
-        '201':
-          description: La cancion se ha subido correctamente
-          links:
-            userDetail:
-              operationId: getCancionID
-              parameters:
-                id: '$response.body#/0/id'
-              description: Ir al detalle del primer usuario
-        '400':
-          description: Error al subir la cancion.
-  
-  /canciones/{id}:
-    get:
-      tags:
-      - Canción
-      operationId: getCancionID
-      summary: Obtener cancion por ID.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID de la cancion
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Cancion encontrada.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Cancion'
+                  $ref: '#/components/schemas/Visualizacion'
         '404':
-          description: Cancion no encontrada.
-          
-    put:
-      tags:
-      - Canción
-      summary: Actualizar una cancion por ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID de la cancion que se desea actualizar
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Cancion'
-      responses:
-        '204':
-          description: Cancion actualizada
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Cancion'
-        '404':
-          description: Cancion no encontrada
-        '400':
-          description: La informacion para actualizar la cancion es erronea
-    
+          description: No se encontraron visualizaciones
     delete:
       tags:
-      - Canción
-      summary: Borrar una cancion por ID
+        - Historial
+      summary: Eliminar historial completo de un perfil
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID del cancion que se desea borrar
+        - in: path
+          name: id_perfil
           schema:
             type: integer
+          required: true
       responses:
         '204':
-          description: Cancion borrada correctamente
+          description: Historial eliminado
         '404':
-          description: Cancion no encontrada
-          
-  /canciones/artista/{id}:
+          description: Perfil no encontrado
+
+  /ratings:
+    post:
+      tags:
+        - Ratings
+      summary: Crear un rating
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rating'
+      responses:
+        '201':
+          description: Rating creado
+        '400':
+          description: Datos inválidos
+
+  /ratings/{id_rating}:
     get:
       tags:
-      - Canción
-      operationId: getCancionPorArtistaID
-      summary: Obtener cancion por el ID de un artista.
+        - Ratings
+      summary: Obtener rating por ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID de la cancion
+        - in: path
+          name: id_rating
           schema:
             type: integer
+          required: true
       responses:
         '200':
-          description: Cancion encontrada.
+          description: Rating encontrado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cancion'
+                $ref: '#/components/schemas/Rating'
         '404':
-          description: Cancion no encontrada.
-
-          
-  /ficheros:
-    get:
+          description: Rating no encontrado
+    put:
       tags:
-      - Ficheros
-      summary: Obtener todos los ficheros
+        - Ratings
+      summary: Actualizar rating
+      parameters:
+        - in: path
+          name: id_rating
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rating'
       responses:
         '200':
-          description: Lista de ficheros
+          description: Rating actualizado
+        '400':
+          description: Datos inválidos
+        '404':
+          description: Rating no encontrado
+    delete:
+      tags:
+        - Ratings
+      summary: Eliminar rating
+      parameters:
+        - in: path
+          name: id_rating
+          schema:
+            type: integer
+          required: true
+      responses:
+        '204':
+          description: Rating eliminado
+        '404':
+          description: Rating no encontrado
+
+  /ratings/content/{id_contenido}:
+    get:
+      tags:
+        - Ratings
+      summary: Obtener ratings por contenido
+      parameters:
+        - in: path
+          name: id_contenido
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Lista de ratings
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Fichero'
-    post:
-      tags:
-      - Ficheros
-      summary: Subir un fichero.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Fichero'
-      responses:
-        '201':
-          description: El fichero se ha subido correctamente
-          links:
-            userDetail:
-              operationId: getFicheroID
-              parameters:
-                id: '$response.body#/0/id'
-              description: Ir al detalle del primer fichero
-        '400':
-          description: Error al subir el fichero.
-  
-  /ficheros/{id}:
+                  $ref: '#/components/schemas/Rating'
+        '404':
+          description: No se encontraron ratings
+
+  /favoritos:
     get:
       tags:
-      - Ficheros
-      operationId: getFicheroID
-      summary: Obtener fichero por ID.
+        - Favoritos
+      summary: Obtener favoritos
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID del fichero
+        - in: query
+          name: id_perfil
           schema:
             type: integer
+          required: true
       responses:
         '200':
-          description: Fichero encontrado.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Fichero'
-        '404':
-          description: Fichero no encontrado.
-    
-    put:
-      tags:
-      - Ficheros
-      summary: Actualizar fichero por ID.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID del fichero a actualizar
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Fichero'
-      responses:
-        '204':
-          description: Fichero actualizado correctamente.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Fichero'
-        '400':
-          description: Error al actualizar el fichero.
-        '404':
-          description: Fichero no encontrado.
-
-    delete:
-      tags:
-      - Ficheros
-      summary: Eliminar fichero por ID.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID del fichero a eliminar
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Fichero eliminado correctamente.
-        '404':
-          description: Fichero no encontrado.
-          
-
-  /merchandising:
-    get:
-      tags:
-      - Merchandising
-      summary: Obtener todos los productos de merchandising
-      responses:
-        '200':
-          description: Lista de productos
+          description: Lista de favoritos
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Merchandising'
+                  $ref: '#/components/schemas/Favorito'
     post:
       tags:
-      - Merchandising
-      summary: Crear producto de merchandising.
+        - Favoritos
+      summary: Agregar a favoritos
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Cancion'
+              $ref: '#/components/schemas/Favorito'
       responses:
         '201':
-          description: El producto se ha subido correctamente
-          links:
-            userDetail:
-              operationId: getProductoID
-              parameters:
-                id: '$response.body#/0/id'
-              description: Ir al detalle del producto creado
+          description: Favorito agregado
         '400':
-          description: Error al subir el producto.
+          description: Datos inválidos
 
-  /merchandising/{id}:
-    get:
-      tags:
-      - Merchandising
-      operationId: getProdcutoID
-      summary: Obtener un producto de merchandising por ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID del producto
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Producto encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Merchandising'
-        '404':
-          description: Producto no encontrado
-    put:
-      tags:
-      - Merchandising
-      summary: Actualizar un producto por ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Merchandising'
-      responses:
-        '204':
-          description: Producto actualizado correctamente
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Cancion'
-        '404':
-          description: Producto no encontrado
-        '400':
-          description: Informacion erronea para actualizar
-
+  /favoritos/{id_favorito}:
     delete:
       tags:
-      - Merchandising
-      summary: Borrar un producto por ID
+        - Favoritos
+      summary: Eliminar favorito
       parameters:
-        - name: id
-          in: path
-          required: true
+        - in: path
+          name: id_favorito
           schema:
             type: integer
+          required: true
       responses:
         '204':
-          description: Producto borrado correctamente
+          description: Favorito eliminado
         '404':
-          description: Producto no encontrado
-  /merchandising/artista/{id}:
+          description: Favorito no encontrado
+
+  /recomendaciones:
     get:
       tags:
-      - Merchandising
-      operationId: getMerchandisingIDArtista
-      summary: Obtener productos por el ID de un artista.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID de la cancion
-          schema:
-            type: integer
+        - Recomendaciones
+      summary: Obtener recomendaciones generales
       responses:
         '200':
-          description: Cancion encontrada.
+          description: Lista de recomendaciones
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Merchandising'
-        '404':
-          description: Cancion no encontrada.
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contenido'
 
-
+  /recomendaciones/{id_usuario}:
+    get:
+      tags:
+        - Recomendaciones
+      summary: Obtener recomendaciones personalizadas
+      parameters:
+        - in: path
+          name: id_usuario
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Lista de recomendaciones personalizadas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contenido'
+        '400':
+          description: Parámetros inválidos
 
 components:
   schemas:
-  
-    Album:
+    Visualizacion:
       type: object
       properties:
-        nombre:
-          type: string
-        artistaAutor:
-          type: string
-        artistasParticipantes:
-          type: array
-          items:
-            type: string
-        canciones:
-          type: array
-          items:
-            type: string
-        fechaLanzamiento:
-          type: string
-          format: date
-        genero:
-          type: string
-            
-    Cancion:
-      type: object
-      properties:
-        nombre:
-          type: string
-        duracion:
-          type: string
-        genero:
-          type: string
-        artista:
-          type: string
-        album:
-          type: string
-        fichero:
-          $ref: './ficheros.yaml#/components/schemas/Fichero'
-        portada:
-          $ref: './portada.yaml#/components/schemas/Portada'
-  
-    Fichero:
-      type: object
-      properties:
-        id:
+        id_visualizacion:
           type: integer
-          description: ID único del fichero
-        nombre:
-          type: string
-          description: Nombre del fichero
-        tipo:
-          type: string
-          description: Tipo de fichero (e.g., audio, imagen)
-        tamaño:
+        id_perfil:
           type: integer
-          description: Tamaño del fichero en bytes
-        url:
+        id_contenido:
+          type: integer
+        fecha_visualizacion:
           type: string
-          description: URL para acceder al Fichero
-          
-    Merchandising:
+          format: date-time
+        progreso:
+          type: number
+          format: float
+
+    Rating:
       type: object
       properties:
-        nombre:
+        id_rating:
+          type: integer
+        id_contenido:
+          type: integer
+        id_perfil:
+          type: integer
+        thumb_up:
+          type: boolean
+
+    Favorito:
+      type: object
+      properties:
+        id_favorito:
+          type: integer
+        id_perfil:
+          type: integer
+        id_contenido:
+          type: integer
+        fecha_agregado:
+          type: string
+          format: date-time
+
+    Contenido:
+      type: object
+      properties:
+        id_contenido:
+          type: integer
+        titulo:
           type: string
         descripcion:
           type: string
-        artista:
+        tipo:
           type: string
-        precio:
-          type: number
-          format: float
-        disponibilidad:
-          type: boolean
-        cantidad_stock:
+          enum:
+            - pelicula
+            - serie
+        fecha_lanzamiento:
+          type: string
+          format: date
+        duracion:
           type: integer
-        empresa_envio:
+        trailer_url:
           type: string
-        imagen:
-          $ref: '#/components/schemas/Imagen'
+          format: uri
+        portada_url:
+          type: string
+          format: uri
+        stream_url:
+          type: string
+          format: uri
