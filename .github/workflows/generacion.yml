@@ -37,3 +37,6 @@ jobs:
         run: zip -r openapi_server.zip openapi_server
 
       - uses: actions/upload-artifact@v4
+        with: 
+          name: Ejercicio 3
+          path: ./openapi_server
